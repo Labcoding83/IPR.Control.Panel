@@ -1,5 +1,5 @@
 # IPR.Control.Panel
-Hardware monitoring and some control features..
+Hardware monitoring and some control features.
 
 ## Features
 * Monitor all hardware as __LibreHardwareMonitor__ does. 
