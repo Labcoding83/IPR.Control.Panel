@@ -34,6 +34,7 @@ namespace IPR.Hardware.Tools.Hardware
     internal class Computer : IComputer
     {
         private readonly List<IGroup> _groups = new();
+        internal List<IGroup> Groups { get { return _groups; } }
         private readonly object _lock = new();
         private CancellationTokenSource _cancellationTokenSource = new ();
         
@@ -286,69 +287,7 @@ namespace IPR.Hardware.Tools.Hardware
         ///
         public string GetReport()
         {
-            lock (_lock)
-            {
-                using StringWriter w = new(CultureInfo.InvariantCulture);
-
-                w.WriteLine();
-                w.WriteLine(nameof(IPR.Hardware.Tools) + " Report");
-                w.WriteLine();
-
-                Version version = typeof(Computer).Assembly.GetName().Version;
-
-                NewSection(w);
-                w.Write("Version: ");
-                w.WriteLine(version.ToString());
-                w.WriteLine();
-
-                NewSection(w);
-                w.Write("Common Language Runtime: ");
-                w.WriteLine(Environment.Version.ToString());
-                w.Write("Operating System: ");
-                w.WriteLine(Environment.OSVersion.ToString());
-                w.Write("Process Type: ");
-                w.WriteLine(IntPtr.Size == 4 ? "32-Bit" : "64-Bit");
-                w.WriteLine();
-
-                NewSection(w);
-                w.WriteLine("Sensors");
-                w.WriteLine();
-
-                foreach (IGroup group in _groups)
-                {
-                    foreach (IHardware hardware in group.Hardware)
-                        ReportHardwareSensorTree(hardware, w, string.Empty);
-                }
-
-                w.WriteLine();
-
-                NewSection(w);
-                w.WriteLine("Parameters");
-                w.WriteLine();
-
-                foreach (IGroup group in _groups)
-                {
-                    foreach (IHardware hardware in group.Hardware)
-                        ReportHardwareParameterTree(hardware, w, string.Empty);
-                }
-
-                w.WriteLine();
-
-                foreach (IGroup group in _groups)
-                {
-                    string report = group.GetReport();
-                    if (!string.IsNullOrEmpty(report))
-                    {
-                        NewSection(w);
-                        w.Write(report);
-                    }
-
-                    foreach (IHardware hardware in (IEnumerable<IHardware>)group.Hardware)
-                        ReportHardware(hardware, w);
-                }
-
-                return w.ToString();
-            }
+            return Report.GetReport(this);
         }
 
         private void Add(IGroup group)
@@ -454,83 +393,6 @@ namespace IPR.Hardware.Tools.Hardware
 
             if (_batteryEnabled)
                 Add(new BatteryGroup());
-        }
-
-        private static void NewSection(TextWriter writer)
-        {
-            for (int i = 0; i < 8; i++)
-                writer.Write("----------");
-
-            writer.WriteLine();
-            writer.WriteLine();
-        }
-
-        private static int CompareSensor(ISensor a, ISensor b)
-        {
-            int c = a.SensorType.CompareTo(b.SensorType);
-            if (c == 0)
-                return a.Index.CompareTo(b.Index);
-
-            return c;
-        }
-
-        private static void ReportHardwareSensorTree(IHardware hardware, TextWriter w, string space)
-        {
-            w.WriteLine("{0}|", space);
-            w.WriteLine("{0}+- {1} ({2})", space, hardware.Name, hardware.Identifier);
-
-            ISensor[] sensors = hardware.Sensors;
-            Array.Sort(sensors, CompareSensor);
-
-            foreach (ISensor sensor in sensors)
-                w.WriteLine("{0}|  +- {1,-14} : {2,8:G6} ({3})", space, sensor.Name, sensor.Value, sensor.Identifier);
-
-            foreach (IHardware subHardware in hardware.SubHardware)
-                ReportHardwareSensorTree(subHardware, w, "|  ");
-        }
-
-        private static void ReportHardwareParameterTree(IHardware hardware, TextWriter w, string space)
-        {
-            w.WriteLine("{0}|", space);
-            w.WriteLine("{0}+- {1} ({2})", space, hardware.Name, hardware.Identifier);
-
-            ISensor[] sensors = hardware.Sensors;
-            Array.Sort(sensors, CompareSensor);
-
-            foreach (ISensor sensor in sensors)
-            {
-                string innerSpace = space + "|  ";
-                if (sensor.Parameters.Count > 0)
-                {
-                    w.WriteLine("{0}|", innerSpace);
-                    w.WriteLine("{0}+- {1} ({2})", innerSpace, sensor.Name, sensor.Identifier);
-
-                    foreach (IParameter parameter in sensor.Parameters)
-                    {
-                        string innerInnerSpace = innerSpace + "|  ";
-                        if (parameter.ParameterType == ParameterType.Value)
-                            w.WriteLine("{0}+- {1} : {2}", innerInnerSpace, parameter.Name, parameter.Value);
-                        else
-                            w.WriteLine("{0}+- {1} : {2} - {3}", innerInnerSpace, parameter.Name, parameter.MinValue, parameter.MaxValue);
-                    }
-                }
-            }
-
-            foreach (IHardware subHardware in hardware.SubHardware)
-                ReportHardwareParameterTree(subHardware, w, "|  ");
-        }
-
-        private static void ReportHardware(IHardware hardware, TextWriter w)
-        {
-            string hardwareReport = hardware.GetReport();
-            if (!string.IsNullOrEmpty(hardwareReport))
-            {
-                NewSection(w);
-                w.Write(hardwareReport);
-            }
-
-            foreach (IHardware subHardware in hardware.SubHardware)
-                ReportHardware(subHardware, w);
         }
 
         /// <inheritdoc/>
