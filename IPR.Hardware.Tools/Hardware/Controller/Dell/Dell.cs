@@ -24,14 +24,16 @@ namespace IPR.Hardware.Tools.Hardware.Controller.Dell
         private readonly List<Sensor> _fanSensors = new();
         private readonly List<Control> _fanControls = new();
         private DellSmbiosBzh _dellSmb;
+        private bool _isInitialized;
+        private Exception _failure;
 
         public Dell(string boardName) : base(nameof(Dell), new Identifier(nameof(Dell), boardName))
         {
             try
             {
                 _dellSmb = new();
-                var initialized = _dellSmb.Initialize();
-                if (!initialized)
+                _isInitialized = _dellSmb.Initialize();
+                if (!_isInitialized)
                     return;
 
                 foreach(var fan in Enum.GetValues(typeof(BzhFanIndex)).Cast<BzhFanIndex>().Select((x, i) => new { x, i}))
@@ -67,7 +69,7 @@ namespace IPR.Hardware.Tools.Hardware.Controller.Dell
             }
             catch (Exception ex)
             {
-
+                _failure = ex;
             }
         }
 
@@ -81,6 +83,12 @@ namespace IPR.Hardware.Tools.Hardware.Controller.Dell
             StringBuilder r = new();
             r.AppendLine("Dell");
             r.AppendLine();
+
+            if(!_isInitialized)
+            {
+                r.AppendLine("Failed to initialize Dell controller.");
+                r.AppendLine(_failure.Message);
+            }
 
             r.AppendLine();
             return r.ToString();
