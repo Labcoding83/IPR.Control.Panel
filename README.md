@@ -3,7 +3,7 @@ Hardware monitoring and some control features..
 
 ## Features
 * Monitor all hardware as --LibreHardwareMonitor-- does. 
-* Controls Intel CPU voltage offsets overclocking/undervolting (between -150mn and +150mv)
+* Controls Intel CPU voltage offsets over/undervolting (between -150mv and +150mv)
 * Controls some Dell laptop fans
 * Controls can have fixed values or (minimal) custom curve values  
 
