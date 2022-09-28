@@ -1,0 +1,24 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+			 xmlns:prism="http://prismlibrary.com/"
+			 xmlns:ScottPlot="clr-namespace:ScottPlot.Avalonia;assembly=ScottPlot.Avalonia"
+			 xmlns:models="clr-namespace:IPR.Control.Panel.Models;assembly=IPR.Control.Panel"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+			 prism:ViewModelLocator.AutoWireViewModel="True"
+             x:Class="IPR.Control.Panel.Views.SensorHistoryView">
+
+	<UserControl.Styles>
+		<Style Selector="StackPanel">
+			<Setter Property="Margin" Value="10" />
+		</Style>
+	</UserControl.Styles>
+
+	<DockPanel Width="600">
+		<StackPanel Orientation="Horizontal" DockPanel.Dock="Top">
+			<TextBlock Text="{Binding Sensor.Name}" />
+		</StackPanel>
+		<ScottPlot:AvaPlot Name="AvaPlot1" />
+	</DockPanel>
+</UserControl>

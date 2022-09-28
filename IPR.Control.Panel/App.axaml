@@ -1,0 +1,15 @@
+<prism:PrismApplication xmlns="https://github.com/avaloniaui"
+                        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+						xmlns:prism="http://prismlibrary.com/"
+						xmlns:themes="clr-namespace:Material.Styles.Themes;assembly=Material.Styles"
+						xmlns:local="using:IPR.Control.Panel"
+						x:Class="IPR.Control.Panel.App">
+	
+	<Application.Resources>
+		<themes:BundledTheme BaseTheme="Light" PrimaryColor="Indigo" SecondaryColor="Teal"/>
+	</Application.Resources>
+	<Application.Styles>
+		<StyleInclude Source="avares://Material.Avalonia/Material.Avalonia.Templates.xaml" />
+	</Application.Styles>
+</prism:PrismApplication>
+

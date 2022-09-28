@@ -1,0 +1,52 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+			 xmlns:prism="http://prismlibrary.com/"
+			 xmlns:ScottPlot="clr-namespace:ScottPlot.Avalonia;assembly=ScottPlot.Avalonia"
+			 xmlns:styles="clr-namespace:Material.Styles;assembly=Material.Styles"
+			 xmlns:avalonia="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
+			 xmlns:models="clr-namespace:IPR.Control.Panel.Models;assembly=IPR.Control.Panel"
+			 xmlns:controls="clr-namespace:IPR.Control.Panel.Controls"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+			 Width="800" Height="600"
+			 prism:ViewModelLocator.AutoWireViewModel="True"
+			 x:Class="IPR.Control.Panel.Views.GraphDialogView">
+
+	<StackPanel>
+		<StackPanel VerticalAlignment="Center" HorizontalAlignment="Center" DockPanel.Dock="Top">
+			<TextBlock Text="{Binding Control.Name}" />
+		</StackPanel>
+		<Grid ColumnDefinitions="200, 600">
+			<StackPanel Grid.Column="0">
+				<Panel>
+					<ComboBox PlaceholderText="Select sensor"
+							  Items="{Binding Sensors}"
+							  SelectedItem="{Binding SelectedSensor}"
+							  Width="150">
+						<ComboBox.ItemTemplate>
+							<DataTemplate>
+								<TextBlock Width="150" Text="{Binding Name}" />
+							</DataTemplate>
+						</ComboBox.ItemTemplate>
+					</ComboBox>
+
+					<Button Classes="Outline Dark "
+							HorizontalAlignment="Right"
+							Command="{Binding CmdClearSelection}"
+							Padding="0"
+							Width="30">X</Button>
+				</Panel>
+			</StackPanel>
+			<ScottPlot:AvaPlot
+				Grid.Column="1" 
+				Width="600" Height="550" 
+				Name="plot" />
+		</Grid>
+		<StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+			<Button Margin="0 0 12 0" Content="Cancel" Command="{Binding CmdResult}" CommandParameter="2" />
+			<Button Margin="0 0 12 0" Content="OK" IsEnabled="{Binding CanSave}" Command="{Binding CmdResult}" CommandParameter="1" />
+		</StackPanel>
+		
+	</StackPanel>
+</UserControl>

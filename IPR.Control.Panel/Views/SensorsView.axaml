@@ -1,0 +1,57 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+			 xmlns:prism="http://prismlibrary.com/"
+			 xmlns:models="clr-namespace:IPR.Control.Panel.Models;assembly=IPR.Control.Panel"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+			 prism:ViewModelLocator.AutoWireViewModel="True"
+             x:Class="IPR.Control.Panel.Views.SensorsView">
+
+	<ScrollViewer>
+		<Grid RowDefinitions="20,auto">
+			<Grid Grid.Row="0" ColumnDefinitions="365, 85, 85">
+				<TextBlock Grid.Column="0" Text="Sensor" Padding="5" />
+				<TextBlock Grid.Column="1" Text="Value" Padding="5"/>
+				<TextBlock Grid.Column="2" Text="Max" Padding="5"/>
+			</Grid>
+
+			<TreeView Grid.Row="1" Name="sensorTree" Items="{Binding Source}" SelectedItem="{Binding SelectedItem}">
+				<TreeView.ContextMenu>
+					<ContextMenu>
+						<MenuItem Header="Reset min/max" Command="{Binding CmdReset}" />
+					</ContextMenu>
+				</TreeView.ContextMenu>
+				<TreeView.Styles>
+					<Style Selector="TreeViewItem">
+						<Setter Property="IsExpanded" Value="{Binding IsExpanded, Mode=OneWay}" />
+						<Setter Property="Padding" Value="0 0 0 0"/>
+						<Setter Property="Margin" Value="0 0 0 0"/>
+					</Style>
+					<Style Selector="TextBlock">
+						<Setter Property="FontSize" Value="10"/>
+						<Setter Property="Padding" Value="0 0 0 0"/>
+						<Setter Property="Margin" Value="0 0 0 0"/>
+					</Style>
+				</TreeView.Styles>
+				<TreeView.DataTemplates>
+					<TreeDataTemplate DataType="models:HardWare" ItemsSource="{Binding SensorTypes}">
+						<TextBlock Text="{Binding Name}" />
+					</TreeDataTemplate>
+					<TreeDataTemplate DataType="models:SensorType" ItemsSource="{Binding Sensors}">
+						<TextBlock Text="{Binding Name}" />
+					</TreeDataTemplate>
+					<DataTemplate DataType="models:Sensor">
+						<Grid ColumnDefinitions="305, 85, 85">
+							<TextBlock Grid.Column="0" Text="{Binding Name}" />
+							<TextBlock Grid.Column="1" Text="{Binding Value}" />
+							<TextBlock Grid.Column="2" Text="{Binding Max}" />
+						</Grid>
+					</DataTemplate>
+				</TreeView.DataTemplates>
+			</TreeView>
+		</Grid>
+
+
+	</ScrollViewer>
+</UserControl>

@@ -1,0 +1,54 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+			 xmlns:prism="http://prismlibrary.com/"
+			 xmlns:styles="clr-namespace:Material.Styles;assembly=Material.Styles"
+			 xmlns:avalonia="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
+			 xmlns:models="clr-namespace:IPR.Control.Panel.Models;assembly=IPR.Control.Panel"
+			 xmlns:controls="clr-namespace:IPR.Control.Panel.Controls"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+			 prism:ViewModelLocator.AutoWireViewModel="True"
+             x:Class="IPR.Control.Panel.Views.ControlsView">
+
+	<ScrollViewer>
+		<StackPanel Orientation="Vertical"
+						Margin="5,0,0,0">
+			<StackPanel Orientation="Vertical"
+						Spacing="16">
+				<Expander Header="CPU Voltage offsets" ExpandDirection="Down" IsExpanded="True" IsVisible="{Binding IsCpuOffsetAvailable}">
+					<ListBox Grid.Column="0" Grid.Row="1"
+					x:Name="CpuOffsets"
+					Items="{Binding CpuOffsets}">
+						<ListBox.ItemsPanel>
+							<ItemsPanelTemplate>
+								<WrapPanel Orientation="Horizontal" />
+							</ItemsPanelTemplate>
+						</ListBox.ItemsPanel>
+						<ListBox.DataTemplates>
+							<DataTemplate DataType="{x:Type models:Control}">
+								<controls:OffsetPanel Width="230" VerticalAlignment="Top"></controls:OffsetPanel>
+							</DataTemplate>
+						</ListBox.DataTemplates>
+					</ListBox>
+				</Expander>
+				<Expander Header="Fans" ExpandDirection="Down" IsExpanded="True" IsVisible="{Binding IsFanAvailable}">
+					<ListBox Grid.Column="0" Grid.Row="2"
+					x:Name="Fans"
+					Items="{Binding FanControls}">
+						<ListBox.ItemsPanel>
+							<ItemsPanelTemplate>
+								<WrapPanel Orientation="Horizontal" />
+							</ItemsPanelTemplate>
+						</ListBox.ItemsPanel>
+						<ListBox.DataTemplates>
+							<DataTemplate DataType="{x:Type models:Control}">
+								<controls:OffsetPanel Width="230" VerticalAlignment="Top"></controls:OffsetPanel>
+							</DataTemplate>
+						</ListBox.DataTemplates>
+					</ListBox>
+				</Expander>
+			</StackPanel>
+		</StackPanel>
+	</ScrollViewer>
+</UserControl>

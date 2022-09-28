@@ -1,0 +1,25 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:prism="http://prismlibrary.com/"
+			 prism:ViewModelLocator.AutoWireViewModel="True"
+			 mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="IPR.Control.Panel.Views.DebugView">
+	
+	<ScrollViewer>
+		<StackPanel>
+			<DockPanel>
+
+				<StackPanel DockPanel.Dock="Right" Orientation="Horizontal">
+					<Button Content="Copy to clipboard" Command="{Binding CmdCopyLog}" DockPanel.Dock="Left"/>
+					<Button Content="Refresh Log" Command="{Binding CmdGetLog}" DockPanel.Dock="Left"/>
+					<Button Content="Error" Command="{Binding CmdError}" DockPanel.Dock="Left"/>
+				</StackPanel>
+			</DockPanel>
+
+			<TextBlock  Text="{Binding Log}" />
+		</StackPanel>
+	</ScrollViewer>
+
+</UserControl>

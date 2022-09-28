@@ -1,0 +1,54 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+			 xmlns:prism="http://prismlibrary.com/"
+			 xmlns:p1="clr-namespace:Material.Styles.Assists;assembly=Material.Styles"
+			 xmlns:styles="clr-namespace:Material.Styles;assembly=Material.Styles"
+			 xmlns:avalonia="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
+			 xmlns:controls="clr-namespace:IPR.Control.Panel.Controls"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="IPR.Control.Panel.Controls.OffsetPanel">
+	<styles:Card Padding="16">
+		<StackPanel>
+			<Panel>
+				<TextBlock Text="{Binding Name}"/>
+				<Button Classes="Flat Accent" Content="Accent" ToolTip.Tip=""
+						HorizontalAlignment="Right"  IsVisible="{Binding IsLocked}"
+						Click="LockUnlock_OnClick">
+					<avalonia:MaterialIcon Kind="Lock" />
+				</Button>
+				<Button Classes="Flat Accent" Content="Accent" ToolTip.Tip=""
+						HorizontalAlignment="Right"  IsVisible="{Binding IsUnlocked}"
+						Click="LockUnlock_OnClick">
+					<avalonia:MaterialIcon Kind="LockOpenVariantOutline" />
+				</Button>
+			</Panel>
+			<Panel Margin="0,12,0,0" >
+				<TextBlock HorizontalAlignment="Left" Text="{Binding Sensor.SensorType}" />
+				<TextBlock HorizontalAlignment="Right" Text="{Binding Sensor.DisplayValue}" />
+			</Panel>
+			<Panel Margin="0,12,0,0" IsVisible="{Binding IsUnlocked}">
+				<TabControl Name="offsetTabs" SelectionChanged="ControlTypeSelector_SelectionChanged">
+					<TabControl.Items>
+						<TabItem Header="Default">
+							<Panel Margin="0,12,0,0" >
+								<controls:DefaultValueOffsetControl />
+							</Panel>
+						</TabItem>
+						<TabItem Header="Fixed">
+							<Panel Margin="0,12,0,0" >
+								<controls:FixedOffsetSettingsControl />
+							</Panel>
+						</TabItem>
+						<TabItem Header="Graph">
+							<Panel Margin="0,12,0,0" >
+								<controls:GraphOffsetValueControl />
+							</Panel>
+						</TabItem>
+					</TabControl.Items>
+				</TabControl>
+			</Panel>
+		</StackPanel>
+	</styles:Card>
+</UserControl>

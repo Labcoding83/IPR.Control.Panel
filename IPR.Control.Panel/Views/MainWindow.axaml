@@ -1,0 +1,24 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:IPR.Control.Panel.ViewModels"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+		xmlns:prism="http://prismlibrary.com/"
+		xmlns:core="clr-namespace:IPR.Control.Panel.Common;assembly=IPR.Control.Panel"
+		prism:ViewModelLocator.AutoWireViewModel="True"
+        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+        x:Class="IPR.Control.Panel.Views.MainWindow"
+        Icon="/Assets/ipr-logo.ico"
+        Title="IPR.Control.Panel">
+
+	<Grid>
+		<Grid.ColumnDefinitions>
+			<ColumnDefinition Width="150" />
+			<ColumnDefinition Width="*" />
+			<ColumnDefinition Width="auto" />
+		</Grid.ColumnDefinitions>
+		<ContentControl Grid.Column="0" prism:RegionManager.RegionName="{x:Static core:RegionNames.LeftRegion}" />
+		<ContentControl Grid.Column="1" prism:RegionManager.RegionName="{x:Static core:RegionNames.ContentRegion}" />
+		<ContentControl IsVisible="{Binding IsRightViewVisible}" Grid.Column="2" prism:RegionManager.RegionName="{x:Static core:RegionNames.RightRegion}" />
+	</Grid>
+</Window>

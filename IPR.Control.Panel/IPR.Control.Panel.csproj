@@ -1,0 +1,59 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net6.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <!--Avalonia doesen't support TrimMode=link currently,but we are working on that https://github.com/AvaloniaUI/Avalonia/issues/6892 -->
+    <TrimMode>copyused</TrimMode>
+    <BuiltInComInteropSupport>true</BuiltInComInteropSupport>
+    <StartupObject>IPR.Control.Panel.Program</StartupObject>
+    <ApplicationIcon>Assets\ipr-logo.ico</ApplicationIcon>
+    <SignAssembly>False</SignAssembly>
+    <PackageIcon>ipr-logo.jpg</PackageIcon>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
+	<VersionPrefix>0.1.0</VersionPrefix>
+  </PropertyGroup>
+  <ItemGroup>
+    <AvaloniaResource Include="Assets\**" />
+    <None Remove=".gitignore" />
+    <None Remove="appstate.json" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Assets\ipr-logo.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="appstate.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <!--This helps with theme dll-s trimming.
+	If you will publish your application in self-contained mode with p:PublishTrimmed=true and it will use Fluent theme Default theme will be trimmed from the output and vice versa.
+	https://github.com/AvaloniaUI/Avalonia/issues/5593 -->
+    <TrimmableAssembly Include="Avalonia.Themes.Fluent" />
+  </ItemGroup>
+  <ItemGroup>
+    <!--Condition below is needed to remove Avalonia.Diagnostics package from build output in Release configuration.-->
+    <PackageReference Include="Material.Avalonia" Version="2.5.1" />
+    <PackageReference Include="Prism.Avalonia" Version="8.1.97" />
+    <PackageReference Include="Prism.Core" Version="8.1.97" />
+    <PackageReference Include="Prism.DryIoc.Avalonia" Version="8.1.97" />
+    <PackageReference Include="Prism.Logging.Serilog" Version="7.2.0.1423" />
+    <PackageReference Include="Prism.Plugin.Logging.Abstractions" Version="8.1.16" />
+    <PackageReference Include="ScottPlot.Avalonia" Version="4.1.57" />
+    <PackageReference Include="Serilog.Sinks.File" Version="5.0.0" />
+    <PackageReference Include="Serilog.Sinks.ListOfString" Version="4.1.4.3" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\IPR.Hardware.Tools\IPR.Hardware.Tools.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Update="Assets\ipr-logo.jpg">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
+  </ItemGroup>
+	<PropertyGroup>
+		<ApplicationManifest>app.manifest</ApplicationManifest>
+	</PropertyGroup>
+</Project>

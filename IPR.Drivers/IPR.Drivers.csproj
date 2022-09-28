@@ -1,0 +1,29 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFrameworks>net6.0</TargetFrameworks>
+    <RootNamespace>Msr.Tools</RootNamespace>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="WinRing0x64.sys" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="bzh_dell_smm_io_x64.sys">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="WinRing0x64.sys">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+	<ItemGroup>
+		<InternalsVisibleTo Include="IPR.Hardware.Tools" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <PackageReference Include="System.Management" Version="6.0.0" />
+	</ItemGroup>
+</Project>
