@@ -9,6 +9,9 @@ namespace IPR.Hardware.Tools.Hardware.CPU
 
         partial void InitControls()
         {
+            if (!Ring0.Instance.IsOpen)
+                return;
+            
             _cpuVoltageOffsetControls = new Control[offsetLabels.Length];
             for (int i = 0; i < offsetLabels.Length; i++)
             {
