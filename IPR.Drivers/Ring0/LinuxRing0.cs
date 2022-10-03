@@ -13,26 +13,138 @@ namespace IPR.Drivers.Ring0
 
         public bool Open()
         {
-            return true;
+            IsOpen = CheckVersion();
+            return IsOpen;
         }
+
+        private bool CheckVersion()
+        {
+            try
+            {
+                string rdResult = "";
+                using (System.Diagnostics.Process proc = new System.Diagnostics.Process())
+                {
+                    proc.StartInfo.FileName = "rdmsr";
+                    proc.StartInfo.Arguments = "--version ";
+                    proc.StartInfo.UseShellExecute = false;
+                    proc.StartInfo.RedirectStandardOutput = true;
+                    proc.StartInfo.RedirectStandardError = true;
+                    proc.Start();
+
+                    rdResult += proc.StandardOutput.ReadToEnd();
+                    rdResult += proc.StandardError.ReadToEnd();
+
+                    proc.WaitForExit();
+                }
+
+                string wrResult = "";
+                using (System.Diagnostics.Process proc = new System.Diagnostics.Process())
+                {
+                    proc.StartInfo.FileName = "wrmsr";
+                    proc.StartInfo.Arguments = "--version ";
+                    proc.StartInfo.UseShellExecute = false;
+                    proc.StartInfo.RedirectStandardOutput = true;
+                    proc.StartInfo.RedirectStandardError = true;
+                    proc.Start();
+
+                    wrResult += proc.StandardOutput.ReadToEnd();
+                    wrResult += proc.StandardError.ReadToEnd();
+
+                    proc.WaitForExit();
+                }
+
+                return !string.IsNullOrEmpty(rdResult) && !string.IsNullOrEmpty(wrResult)
+                                                       && rdResult.Contains("version msr-tools") &&
+                                                       wrResult.Contains("version msr-tools");
+            }
+            catch (Exception e)
+            {
+                return false;
+            }
+        }
+
+      
 
         public bool ReadMsr(uint index, out uint eax, out uint edx)
         {
             eax = 0;
             edx = 0;
-            return false;
+            if (!IsOpen)
+            {
+                return false;
+            }
+
+            string rawresuld = "";
+            using (System.Diagnostics.Process proc = new System.Diagnostics.Process())
+            {
+                
+                proc.StartInfo.FileName = "rdmsr";
+                proc.StartInfo.Arguments = "0x" + index.ToString("X");
+                proc.StartInfo.UseShellExecute = false;
+                proc.StartInfo.RedirectStandardOutput = true;
+                proc.StartInfo.RedirectStandardError = true;
+                proc.Start();
+
+                rawresuld += proc.StandardOutput.ReadToEnd().Replace(Environment.NewLine, "");
+                rawresuld += proc.StandardError.ReadToEnd();
+
+                proc.WaitForExit();
+            }
+
+            try
+            {
+                ulong result = Convert.ToUInt64(rawresuld, 16);
+                edx = (uint)((result >> 32) & 0xFFFFFFFF);
+                eax = (uint)(result & 0xFFFFFFFF);
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
         }
 
         public bool ReadMsr(uint index, out uint eax, out uint edx, GroupAffinity affinity)
         {
-            eax = 0;
-            edx = 0;
-            return false;
+            GroupAffinity previousAffinity = ThreadAffinity.Set(affinity);
+            bool result = ReadMsr(index, out eax, out edx);
+            ThreadAffinity.Set(previousAffinity);
+            return result;
         }
 
         public bool WriteMsr(uint index, uint eax, uint edx)
         {
-            throw new NotImplementedException();
+            if (!IsOpen)
+            {
+                return false;
+            }
+
+            try
+            {
+                string rawresuld = "";
+                using (System.Diagnostics.Process proc = new System.Diagnostics.Process())
+                {
+                    proc.StartInfo.FileName = "wrmsr";
+                    proc.StartInfo.Arguments = "0x" + index.ToString("X") + " " + "0x" + edx.ToString("x8") +
+                                               eax.ToString("x8");
+                    proc.StartInfo.UseShellExecute = false;
+                    proc.StartInfo.RedirectStandardOutput = true;
+                    proc.StartInfo.RedirectStandardError = true;
+                    proc.Start();
+                    
+
+                    rawresuld += proc.StandardOutput.ReadToEnd().Replace(Environment.NewLine, "");
+                    rawresuld += proc.StandardError.ReadToEnd();
+
+                    proc.WaitForExit();
+                }
+
+                return string.IsNullOrEmpty(rawresuld);
+            }
+            catch
+            {
+                return false;
+            }
         }
 
         public byte ReadIoPort(uint port)
