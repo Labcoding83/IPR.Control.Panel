@@ -842,14 +842,18 @@ namespace IPR.Hardware.Tools.Hardware.Motherboard
                 }
             }
 
-            for (int i = 0; i < ProcessorCaches.Length; i++)
+            if (ProcessorCaches != null)
             {
-                r.Append("Cache [" + ProcessorCaches[i].Designation + "] Size: ");
-                r.AppendLine(ProcessorCaches[i].Size.ToString());
-                r.Append("Cache [" + ProcessorCaches[i].Designation + "] Associativity: ");
-                r.AppendLine(ProcessorCaches[i].Associativity.ToString().Replace("_", string.Empty));
-                r.AppendLine();
+                for (int i = 0; i < ProcessorCaches.Length; i++)
+                {
+                    r.Append("Cache [" + ProcessorCaches[i].Designation + "] Size: ");
+                    r.AppendLine(ProcessorCaches[i].Size.ToString());
+                    r.Append("Cache [" + ProcessorCaches[i].Designation + "] Associativity: ");
+                    r.AppendLine(ProcessorCaches[i].Associativity.ToString().Replace("_", string.Empty));
+                    r.AppendLine();
+                }
             }
+            
 
             for (int i = 0; i < MemoryDevices.Length; i++)
             {

@@ -7,8 +7,9 @@
         private static readonly Lazy<IRing0> _Ring0 = new Lazy<IRing0>(() =>
         {
             if (Software.OperatingSystem.IsUnix)
-                throw new NotImplementedException();
-            return new WinRing0();
+                return new LinuxRing0();
+            else
+                return new WinRing0();
         }, LazyThreadSafetyMode.ExecutionAndPublication);
         public static IRing0 Instance { get { return _Ring0.Value; } }
     }

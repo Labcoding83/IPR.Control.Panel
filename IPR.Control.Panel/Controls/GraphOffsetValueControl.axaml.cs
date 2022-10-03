@@ -52,6 +52,8 @@ namespace IPR.Control.Panel.Controls
         private void SetSensor()
         {
             _sensor = _control.Sensor;
+            if(_sensor == null)
+                return;
             _graphEditor.Plot.SetAxisLimits(yMin: _sensor.MinValue, yMax: _sensor.MaxValue, yAxisIndex: 1);
             _sensor.History.CollectionChanged += History_CollectionChanged;
         }

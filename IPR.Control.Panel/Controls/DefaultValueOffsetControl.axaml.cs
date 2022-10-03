@@ -31,6 +31,8 @@ namespace IPR.Control.Panel.Controls
         private void InitDefaultValue()
         {
             _sensor = (DataContext as Models.Control).Sensor;
+            if(_sensor == null)
+                return;
             tbDefaultValue.Text = _sensor.DefaultValue.ToString();
         }
 
