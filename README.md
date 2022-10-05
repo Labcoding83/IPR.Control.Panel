@@ -2,9 +2,9 @@
 Hardware monitoring and some control features.
 
 ## Features
-* Monitor all hardware as __LibreHardwareMonitor__ does. 
-* Controls Intel CPU voltage offsets over/undervolting (between -150mv and +150mv)
-* Controls some Dell laptop fans
+* Monitor all hardware in Windows, partial support under Linux. 
+* Controls Intel CPU voltage offsets over/undervolting (between -150mv and +150mv) (Windows and Linux)
+* Controls some Dell laptop fans (Windows only)
 * Controls can have fixed values or (minimal) custom curve values  
 
 
