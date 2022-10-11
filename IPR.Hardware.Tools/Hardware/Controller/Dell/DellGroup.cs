@@ -25,10 +25,7 @@ namespace IPR.Hardware.Tools.Hardware.Controller.Dell
         {
             if (!sMBios.System.ManufacturerName.StartsWith(Manufacturer.Dell.ToString()))
                 return;
-
-            if (Software.OperatingSystem.IsUnix)
-                return;
-
+            
             _hardware.Add(new Dell(sMBios.Board.ProductName));
         }
 

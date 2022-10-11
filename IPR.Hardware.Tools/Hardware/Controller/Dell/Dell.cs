@@ -8,6 +8,7 @@ using DellFanManagement.DellSmbiozBzhLib;
 using IPR.Hardware.Tools;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.IO.Ports;
@@ -31,45 +32,114 @@ namespace IPR.Hardware.Tools.Hardware.Controller.Dell
         {
             try
             {
-                _dellSmb = new();
-                _isInitialized = _dellSmb.Initialize();
-                if (!_isInitialized)
-                    return;
-
-                foreach(var fan in Enum.GetValues(typeof(BzhFanIndex)).Cast<BzhFanIndex>().Select((x, i) => new { x, i}))
-                {
-                    var rpm = _dellSmb.GetFanRpm(fan.x);
-                    if (rpm == null)
-                        continue;
-                    var sensorLevel = new Sensor($"Fan{fan.i} Level", fan.i, SensorType.FanLevel, this);
-                    sensorLevel.AddValueParameter(Constants.FAN, Constants.FAN_DESC, 0);
-                    sensorLevel.AddRangeParameter((int)BzhFanLevel.Level0, (int)BzhFanLevel.Level2);
-                    _fanSensors.Add(sensorLevel);
-                    ActivateSensor(sensorLevel);
-                    var sensorSpeed = new Sensor($"Fan{fan.i} Speed", fan.i, SensorType.Fan, this);
-                    sensorSpeed.AddValueParameter(Constants.FAN, Constants.FAN_DESC, 0);
-                    _fanSensors.Add(sensorSpeed);
-                    ActivateSensor(sensorSpeed);
-
-
-                    var control = new Control($"Fan{fan.i} FanLevel", fan.i, this, ControlType.FanLevel, (int)BzhFanLevel.Level0, (int)BzhFanLevel.Level2
-                        , (index, value) =>
-                        {
-                            bool success = _dellSmb.DisableAutomaticFanControl(true);
-                            _dellSmb.SetFanLevel((BzhFanIndex)index, (BzhFanLevel)value);
-                            return value;
-                        },
-                         (index, value) =>
-                         {
-                             _dellSmb.SetFanLevel((BzhFanIndex)index, (BzhFanLevel)value);
-                             _dellSmb.EnableAutomaticFanControl(true);
-                         });
-                    ActivateControl(control);
-                }
+                if (Software.OperatingSystem.IsUnix)
+                    InitLinux();
+                else
+                    InitWindows();
             }
             catch (Exception ex)
             {
                 _failure = ex;
+            }
+        }
+
+        /// <summary>
+        /// Requires i8k drivers to be loaded
+        /// i.e. edit /etc/modprobe.d/dell-smm-hwmon.conf as bellow
+        ///  This file must be at /etc/modprobe.d/
+        ///  options dell-smm-hwmon ignore_dmi=1 restricted=0 force=1
+        /// </summary>
+        private void InitLinux()
+        {
+            var i8kValue = File.ReadAllText("/proc/i8k");
+            if (string.IsNullOrEmpty(i8kValue))
+                return;
+            
+            for (var i = 1; i <= 2; i++)
+            {
+                var sensorLevel = new Sensor($"Fan{i} Level", i, SensorType.FanLevel, this);
+                sensorLevel.AddValueParameter(Constants.FAN, Constants.FAN_DESC, 0);
+                sensorLevel.AddRangeParameter((int)BzhFanLevel.Level0, (int)BzhFanLevel.Level2);
+                _fanSensors.Add(sensorLevel);
+                ActivateSensor(sensorLevel);
+                var sensorSpeed = new Sensor($"Fan{i} Speed", i, SensorType.Fan, this);
+                sensorSpeed.AddValueParameter(Constants.FAN, Constants.FAN_DESC, 0);
+                _fanSensors.Add(sensorSpeed);
+                ActivateSensor(sensorSpeed);
+                
+                var control = new Control($"Fan{i} FanLevel", i, this, ControlType.FanLevel, (int)BzhFanLevel.Level0, (int)BzhFanLevel.Level2
+                    , (index, value) =>
+                    {
+                        ProcessStartInfo psi = new ProcessStartInfo();
+                        psi.FileName = "sh";
+                        psi.Arguments = $"i8kctl fan {index} {value}";
+                        psi.UseShellExecute = false;
+                        psi.RedirectStandardOutput = true;
+                        psi.RedirectStandardError = true;
+                        Process proc = new Process
+                        {
+                            StartInfo = psi
+                        };
+                        proc.Start();
+                        proc.WaitForExit();
+                        return value;
+                    },
+                    (index, value) =>
+                    {
+                        ProcessStartInfo psi = new ProcessStartInfo();
+                        psi.FileName = "sh";
+                        psi.Arguments = $"i8kctl fan {index} {value}";
+                        psi.UseShellExecute = false;
+                        psi.RedirectStandardOutput = true;
+                        psi.RedirectStandardError = true;
+                        Process proc = new Process
+                        {
+                            StartInfo = psi
+                        };
+                        proc.Start();
+                        proc.WaitForExit();
+                    });
+                ActivateControl(control);
+            }
+            _isInitialized = true;
+        }
+
+        private void InitWindows()
+        {
+            _dellSmb = new();
+            _isInitialized = _dellSmb.Initialize();
+            if (!_isInitialized)
+                return;
+
+            foreach(var fan in Enum.GetValues(typeof(BzhFanIndex)).Cast<BzhFanIndex>().Select((x, i) => new { x, i}))
+            {
+                var rpm = _dellSmb.GetFanRpm(fan.x);
+                if (rpm == null)
+                    continue;
+                var sensorLevel = new Sensor($"Fan{fan.i} Level", fan.i, SensorType.FanLevel, this);
+                sensorLevel.AddValueParameter(Constants.FAN, Constants.FAN_DESC, 0);
+                sensorLevel.AddRangeParameter((int)BzhFanLevel.Level0, (int)BzhFanLevel.Level2);
+                _fanSensors.Add(sensorLevel);
+                ActivateSensor(sensorLevel);
+                var sensorSpeed = new Sensor($"Fan{fan.i} Speed", fan.i, SensorType.Fan, this);
+                sensorSpeed.AddValueParameter(Constants.FAN, Constants.FAN_DESC, 0);
+                _fanSensors.Add(sensorSpeed);
+                ActivateSensor(sensorSpeed);
+
+
+                var control = new Control($"Fan{fan.i} FanLevel", fan.i, this, ControlType.FanLevel, (int)BzhFanLevel.Level0, (int)BzhFanLevel.Level2
+                    , (index, value) =>
+                    {
+                        bool success = _dellSmb.DisableAutomaticFanControl(true);
+                        _dellSmb.SetFanLevel((BzhFanIndex)index, (BzhFanLevel)value);
+                        return value;
+                    },
+                    (index, value) =>
+                    {
+                        _dellSmb.SetFanLevel((BzhFanIndex)index, (BzhFanLevel)value);
+                        _dellSmb.EnableAutomaticFanControl(true);
+                    });
+                ActivateControl(control);
             }
         }
 
@@ -105,12 +175,29 @@ namespace IPR.Hardware.Tools.Hardware.Controller.Dell
         {
             try
             {
-                foreach (var fan in _fanSensors)
+                if (Software.OperatingSystem.IsUnix)
                 {
-                    var rpm = _dellSmb.GetFanLevel((BzhFanIndex)fan.Index);
+                    var i8kValue = File.ReadAllText("/proc/i8k").Split(" ");
+                    var fan1Level = i8kValue[4];
+                    var fan2Level = i8kValue[5];
+                    var fan1rpm = i8kValue[6];
+                    var fan2rpm = i8kValue[7];
 
-                    fan.Value = rpm.Value;
+                    _fanSensors[0].Value = double.Parse(fan1Level);
+                    _fanSensors[1].Value = double.Parse(fan1rpm);
+                    _fanSensors[2].Value = double.Parse(fan2Level);
+                    _fanSensors[3].Value = double.Parse(fan2rpm);
                 }
+                else
+                {
+                    foreach (var fan in _fanSensors)
+                    {
+                        var rpm = _dellSmb.GetFanLevel((BzhFanIndex)fan.Index);
+
+                        fan.Value = rpm.Value;
+                    }
+                }
+                
             }
             catch
             {
