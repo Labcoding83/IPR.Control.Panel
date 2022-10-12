@@ -10,7 +10,6 @@ Hardware monitoring and some control features that runs on Windows and Linux.
 ## Linux support
 * Install dependencies
 	> sudo apt install msr-tools libgdiplus
-	> sudo apt-get install -y dotnet6
 * To start the application, cd into folder then
 	> sudo dotnet IPR.Control.Panel.dll
 * Fan control for Dell laptop requires
