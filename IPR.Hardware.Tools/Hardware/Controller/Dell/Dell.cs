@@ -71,32 +71,38 @@ namespace IPR.Hardware.Tools.Hardware.Controller.Dell
                     , (index, value) =>
                     {
                         ProcessStartInfo psi = new ProcessStartInfo();
-                        psi.FileName = "sh";
-                        psi.Arguments = $"i8kctl fan {index} {value}";
+                        psi.FileName = "/bin/sh";
+                        psi.Arguments = $"-c \"i8kctl fan {index} {value}\"";
                         psi.UseShellExecute = false;
                         psi.RedirectStandardOutput = true;
                         psi.RedirectStandardError = true;
+                        psi.CreateNoWindow = true;
                         Process proc = new Process
                         {
+                            EnableRaisingEvents = true,
                             StartInfo = psi
                         };
                         proc.Start();
+                        string result = proc.StandardOutput.ReadToEnd();
                         proc.WaitForExit();
+                        proc.Dispose();
                         return value;
                     },
                     (index, value) =>
                     {
                         ProcessStartInfo psi = new ProcessStartInfo();
-                        psi.FileName = "sh";
-                        psi.Arguments = $"i8kctl fan {index} {value}";
+                        psi.FileName = "/bin/sh";
+                        psi.Arguments = $"-c \"i8kctl fan {index} {value}\"";
                         psi.UseShellExecute = false;
                         psi.RedirectStandardOutput = true;
                         psi.RedirectStandardError = true;
+                        psi.CreateNoWindow = true;
                         Process proc = new Process
                         {
                             StartInfo = psi
                         };
                         proc.Start();
+                        string result = proc.StandardOutput.ReadToEnd();
                         proc.WaitForExit();
                     });
                 ActivateControl(control);
@@ -178,10 +184,10 @@ namespace IPR.Hardware.Tools.Hardware.Controller.Dell
                 if (Software.OperatingSystem.IsUnix)
                 {
                     var i8kValue = File.ReadAllText("/proc/i8k").Split(" ");
-                    var fan1Level = i8kValue[4];
-                    var fan2Level = i8kValue[5];
-                    var fan1rpm = i8kValue[6];
-                    var fan2rpm = i8kValue[7];
+                    var fan1Level = i8kValue[5];
+                    var fan2Level = i8kValue[4];
+                    var fan1rpm = i8kValue[7];
+                    var fan2rpm = i8kValue[6];
 
                     _fanSensors[0].Value = double.Parse(fan1Level);
                     _fanSensors[1].Value = double.Parse(fan1rpm);
