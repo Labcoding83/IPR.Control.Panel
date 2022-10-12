@@ -52,6 +52,8 @@ namespace IPR.Control.Panel.Controls
         private void SetSensor()
         {
             _sensor = _control.Sensor;
+            if(_sensor == null)
+                return;
             _graphEditor.Plot.SetAxisLimits(yMin: _sensor.MinValue, yMax: _sensor.MaxValue, yAxisIndex: 1);
             _sensor.History.CollectionChanged += History_CollectionChanged;
         }
@@ -70,7 +72,7 @@ namespace IPR.Control.Panel.Controls
             if (_historyPlot != null)
                 _graphEditor.Plot.Remove(_historyPlot);
             _historyPlot = _graphEditor.Plot.AddSignal(ys, color: Color.DarkBlue);
-            _graphEditor.Plot.SetAxisLimits(yMin: ys.Min(), yMax: ys.Max(), xMin: 0, xMax: Constants.HISTORY_TIMESPAN, yAxisIndex: 1);
+            _graphEditor.Plot.SetAxisLimits(yMin: _control.MinValue, yMax: _control.MaxValue, xMin: 0, xMax: Constants.HISTORY_TIMESPAN, yAxisIndex: 1);
             _historyPlot.MarkerShape = ScottPlot.MarkerShape.none;
             _historyPlot.YAxisIndex = 1;
             _graphEditor.Refresh();
@@ -84,15 +86,15 @@ namespace IPR.Control.Panel.Controls
             var ys = _control.Markers.Select(x => x.Y).ToArray();
             if (_controlPlot != null)
                 _graphEditor.Plot.Remove(_controlPlot);
-            _graphEditor.Plot.SetAxisLimits(yMin: ys.Min(), yMax: ys.Max(), xMin: 0, xMax: Constants.HISTORY_TIMESPAN, yAxisIndex: 0);
-            _controlPlot = _graphEditor.Plot.AddScatterLines(xs, ys, Color.LightBlue);            
+            _graphEditor.Plot.SetAxisLimits(yMin: _control.MinValue, yMax: _control.MaxValue, xMin: 0, xMax: Constants.HISTORY_TIMESPAN, yAxisIndex: 0);
+            _controlPlot = _graphEditor.Plot.AddScatterLines(xs, ys, Color.LightBlue);
             _controlPlot.YAxisIndex = 0;
             _graphEditor.Refresh();
         }
 
         private void EditGraph_Clicked(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
         {
-            var controlViewModel = ((Avalonia.StyledElement)((Avalonia.Controls.Control)((Avalonia.Controls.Control)((Avalonia.Controls.Control)((Avalonia.Controls.Control)((Avalonia.Controls.Control)((Avalonia.Controls.Control)((Avalonia.Controls.Control)((Avalonia.Controls.Control)((Avalonia.Controls.Control)((Avalonia.Controls.Control)((Avalonia.Controls.Control)((Avalonia.Controls.Control)sender).Parent).Parent).Parent).Parent).Parent).Parent).Parent).Parent).Parent).Parent).Parent).Parent).DataContext as ControlsViewModel;
+            var controlViewModel = (sender as Avalonia.Controls.Control)?.Parent?.Parent?.Parent?.Parent?.Parent?.Parent?.Parent?.Parent?.Parent?.Parent?.Parent?.Parent?.DataContext as ControlsViewModel;
             controlViewModel.OpenDialog(_control, SetMarker);
         }
     }

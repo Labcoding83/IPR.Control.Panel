@@ -1,4 +1,5 @@
 ﻿using Avalonia.Controls;
+using DynamicData;
 using IPR.Control.Panel.Models;
 using IPR.Control.Panel.Services;
 using Prism.Commands;
@@ -10,6 +11,7 @@ using ScottPlot.Plottable;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel.DataAnnotations;
 using System.Drawing;
 using System.Linq;
 
@@ -61,7 +63,6 @@ namespace IPR.Control.Panel.ViewModels
             set => SetProperty(ref _canSave, value);
         }
 
-        private double[][] _coordinates;
         private List<DraggableMarkerPlot> _markers = new();
 
         public GraphDialogViewViewModel(
@@ -123,6 +124,7 @@ namespace IPR.Control.Panel.ViewModels
 
         private void InitMarkers()
         {
+            _markers = new();
             for (int i = 0; i < 3; i++)
             {
                 var x = i switch
@@ -137,12 +139,12 @@ namespace IPR.Control.Panel.ViewModels
                 marker.Dragged += Marker_Dragged;
                 marker.DragXLimitMin = i switch
                 {
-                    2 => (SelectedSensor?.MaxValue ?? 100),
+                    //2 => (SelectedSensor?.MinValue ?? 100),
                     _ => 0
                 }; 
                 marker.DragXLimitMax = i switch
                 {
-                    0 => 0,
+                    //0 => 0,
                     _ => (SelectedSensor?.MaxValue ?? 100)
                 };
                 marker.DragYLimitMin = Control.MinValue;
@@ -198,6 +200,35 @@ namespace IPR.Control.Panel.ViewModels
         {
             var dragger = sender as DraggableMarkerPlot;
             dragger.Y = Math.Round(dragger.Y, 0);
+            dragger.X = Math.Round(dragger.X, 0);
+
+            var index = _markers.IndexOf(dragger);
+            if (index == -1)
+                return;
+            if(index == 0)
+            {
+                var next = _markers[index + 1];
+                if (dragger.X >= next.X)
+                    dragger.X = next.X;
+            }
+            if (index > 0 && index < _markers.Count - 1)
+            {
+                var previous = _markers[index - 1];
+                var next = _markers[index + 1];
+
+                if (dragger.X >= next.X)
+                    dragger.X = next.X;
+                if (dragger.X <= previous.X)
+                    dragger.X = previous.X;
+
+            }
+            if (index == _markers.Count - 1)
+            {
+                var previous = _markers[_markers.Count - 2];
+                if (dragger.X <= previous.X)
+                    dragger.X = previous.X;
+            }
+
             RefreshSignal();
         }
 

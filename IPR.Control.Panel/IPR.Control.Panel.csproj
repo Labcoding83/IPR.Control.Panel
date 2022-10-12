@@ -11,7 +11,7 @@
     <SignAssembly>False</SignAssembly>
     <PackageIcon>ipr-logo.jpg</PackageIcon>
     <ApplicationManifest>app.manifest</ApplicationManifest>
-	<VersionPrefix>0.1.0</VersionPrefix>
+	<VersionPrefix>0.2.0</VersionPrefix>
   </PropertyGroup>
   <ItemGroup>
     <AvaloniaResource Include="Assets\**" />

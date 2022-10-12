@@ -121,8 +121,8 @@ namespace IPR.Control.Panel.Services
 
                     foreach (var control in controlsToUpdate)
                     {
-                        if (control.ControllerType == ControllerType.Fixed)
-                            CheckAndSetControlFixedValue(control);
+                        //if (control.ControllerType == ControllerType.Fixed)
+                        //    CheckAndSetControlFixedValue(control);
                         if (control.ControllerType == ControllerType.Graph)
                             CheckAndSetControlGraphValue(control);
                     }

@@ -68,8 +68,8 @@ namespace IPR.Control.Panel.Models
                     .Where(x => x.ParameterType == ParameterType.Value);
                 if (!defaultValParameter.Any())
                     return 0;// throw new ArgumentException("No default values found");
-                if (defaultValParameter.Count() > 1)
-                    throw new ArgumentException("Only one default value allowed.");
+                //if (defaultValParameter.Count() > 1)
+                //    throw new ArgumentException("Only one default value allowed.");
                 return defaultValParameter.First().Value;
             }
         }
